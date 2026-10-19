@@ -49,7 +49,6 @@
       </nav>
 
       <div class="header-actions">
-        <!-- Monochrome Dark Mode Toggle -->
         <button id="theme-toggle" class="theme-toggle-btn" type="button" aria-label="Toggle monochrome dark theme">
           <svg class="theme-toggle-icon" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="5"></circle>
@@ -72,7 +71,7 @@
             <path d="M16 10a4 4 0 0 1-8 0"></path>
           </svg>
           <span>Cart</span>
-          <span class="cart-count-badge">0</span>
+          <span id="cart-count-badge" class="cart-count-badge">0</span>
         </div>
       </div>
     </div>
@@ -96,223 +95,55 @@
       <!-- Catalog Products Area -->
       <section class="products-section" aria-label="Available Products">
         <div class="catalog-toolbar">
-          <div class="filter-group">
-            <button class="filter-btn active" type="button">All Items (6)</button>
-            <button class="filter-btn" type="button">Keyboards</button>
-            <button class="filter-btn" type="button">Displays</button>
-            <button class="filter-btn" type="button">Accessories</button>
+          <div id="filter-group" class="filter-group">
+            <button class="filter-btn active" type="button">All Items</button>
+            <button class="filter-btn" type="button" data-filter="Keyboards">Keyboards</button>
+            <button class="filter-btn" type="button" data-filter="Displays">Displays</button>
+            <button class="filter-btn" type="button" data-filter="Accessories">Accessories</button>
           </div>
-          <span class="item-count-text">Showing 6 products</span>
+          <span id="item-count-text" class="item-count-text">Showing 6 products</span>
         </div>
 
-        <div class="products-grid">
-          <!-- Product 1 -->
-          <article class="product-card" data-product-id="1">
-            <div class="card-header">
-              <span class="sku-tag">SKU-8821</span>
-              <span class="category-tag">Keyboards</span>
-            </div>
-            <div class="product-schematic" aria-hidden="true">
-              <svg class="schematic-svg" viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="1"></rect>
-                <line x1="6" y1="8" x2="6" y2="8.01"></line>
-                <line x1="10" y1="8" x2="10" y2="8.01"></line>
-                <line x1="14" y1="8" x2="14" y2="8.01"></line>
-                <line x1="18" y1="8" x2="18" y2="8.01"></line>
-                <line x1="6" y1="12" x2="6" y2="12.01"></line>
-                <line x1="10" y1="12" x2="10" y2="12.01"></line>
-                <line x1="14" y1="12" x2="14" y2="12.01"></line>
-                <line x1="18" y1="12" x2="18" y2="12.01"></line>
-                <line x1="8" y1="16" x2="16" y2="16"></line>
-              </svg>
-            </div>
-            <h2 class="product-title">Keychron Q1 Pro Mechanical Keyboard</h2>
-            <p class="product-description">75% layout custom mechanical keyboard, fully CNC machined aluminum body, hot-swappable switches, double-gasket dampening.</p>
-            <div class="stock-indicator in-stock">
-              <span>●</span>
-              <span>In Stock (14 units)</span>
-            </div>
-            <div class="card-footer">
-              <span class="product-price">$199.00</span>
-              <button class="btn-add-cart" type="button">
-                <span>Add to Cart</span>
-              </button>
-            </div>
-          </article>
-
-          <!-- Product 2 -->
-          <article class="product-card" data-product-id="2">
-            <div class="card-header">
-              <span class="sku-tag">SKU-4412</span>
-              <span class="category-tag">Peripherals</span>
-            </div>
-            <div class="product-schematic" aria-hidden="true">
-              <svg class="schematic-svg" viewBox="0 0 24 24">
-                <rect x="5" y="2" width="14" height="20" rx="4"></rect>
-                <line x1="12" y1="6" x2="12" y2="10"></line>
-              </svg>
-            </div>
-            <h2 class="product-title">Logitech MX Master 3S Mouse</h2>
-            <p class="product-description">8,000 DPI Darkfield sensor tracks on glass. Quiet clicks, MagSpeed electromagnetic scroll wheel, USB-C fast recharging.</p>
-            <div class="stock-indicator in-stock">
-              <span>●</span>
-              <span>In Stock (28 units)</span>
-            </div>
-            <div class="card-footer">
-              <span class="product-price">$99.00</span>
-              <button class="btn-add-cart" type="button">
-                <span>Add to Cart</span>
-              </button>
-            </div>
-          </article>
-
-          <!-- Product 3 -->
-          <article class="product-card" data-product-id="3">
-            <div class="card-header">
-              <span class="sku-tag">SKU-9905</span>
-              <span class="category-tag">Displays</span>
-            </div>
-            <div class="product-schematic" aria-hidden="true">
-              <svg class="schematic-svg" viewBox="0 0 24 24">
-                <rect x="2" y="3" width="20" height="14" rx="1"></rect>
-                <line x1="8" y1="21" x2="16" y2="21"></line>
-                <line x1="12" y1="17" x2="12" y2="21"></line>
-              </svg>
-            </div>
-            <h2 class="product-title">Dell UltraSharp 27" 4K Monitor</h2>
-            <p class="product-description">U2723QE IPS Black panel with 2000:1 contrast ratio. 98% DCI-P3 color gamut, 90W USB-C hub connectivity with RJ45 Ethernet.</p>
-            <div class="stock-indicator in-stock">
-              <span>●</span>
-              <span>In Stock (6 units)</span>
-            </div>
-            <div class="card-footer">
-              <span class="product-price">$489.00</span>
-              <button class="btn-add-cart" type="button">
-                <span>Add to Cart</span>
-              </button>
-            </div>
-          </article>
-
-          <!-- Product 4 -->
-          <article class="product-card" data-product-id="4">
-            <div class="card-header">
-              <span class="sku-tag">SKU-2319</span>
-              <span class="category-tag">Audio</span>
-            </div>
-            <div class="product-schematic" aria-hidden="true">
-              <svg class="schematic-svg" viewBox="0 0 24 24">
-                <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
-                <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
-              </svg>
-            </div>
-            <h2 class="product-title">Sony WH-1000XM5 Headset</h2>
-            <p class="product-description">Active noise cancellation powered by dual V1/QN1 processors. 8 beamforming mics with AI noise reduction for crisp voice calls.</p>
-            <div class="stock-indicator in-stock">
-              <span>●</span>
-              <span>In Stock (19 units)</span>
-            </div>
-            <div class="card-footer">
-              <span class="product-price">$279.00</span>
-              <button class="btn-add-cart" type="button">
-                <span>Add to Cart</span>
-              </button>
-            </div>
-          </article>
-
-          <!-- Product 5 -->
-          <article class="product-card" data-product-id="5">
-            <div class="card-header">
-              <span class="sku-tag">SKU-6120</span>
-              <span class="category-tag">Hardware</span>
-            </div>
-            <div class="product-schematic" aria-hidden="true">
-              <svg class="schematic-svg" viewBox="0 0 24 24">
-                <rect x="2" y="7" width="20" height="10" rx="1"></rect>
-                <line x1="6" y1="12" x2="8" y2="12"></line>
-                <line x1="11" y1="12" x2="13" y2="12"></line>
-                <line x1="16" y1="12" x2="18" y2="12"></line>
-              </svg>
-            </div>
-            <h2 class="product-title">CalDigit TS4 Thunderbolt 4 Dock</h2>
-            <p class="product-description">18 input/output ports with 98W host charging, 2.5 Gigabit Ethernet, dual 4K/60Hz monitor support, and front UHS-II SD reader.</p>
-            <div class="stock-indicator low-stock">
-              <span>●</span>
-              <span>Low Stock (3 units)</span>
-            </div>
-            <div class="card-footer">
-              <span class="product-price">$379.00</span>
-              <button class="btn-add-cart" type="button">
-                <span>Add to Cart</span>
-              </button>
-            </div>
-          </article>
-
-          <!-- Product 6 -->
-          <article class="product-card" data-product-id="6">
-            <div class="card-header">
-              <span class="sku-tag">SKU-1084</span>
-              <span class="category-tag">Accessories</span>
-            </div>
-            <div class="product-schematic" aria-hidden="true">
-              <svg class="schematic-svg" viewBox="0 0 24 24">
-                <path d="M12 2v8"></path>
-                <path d="M4 10h16"></path>
-                <rect x="8" y="14" width="8" height="6" rx="1"></rect>
-                <line x1="12" y1="10" x2="12" y2="14"></line>
-              </svg>
-            </div>
-            <h2 class="product-title">Heavy-Duty Gas Spring Monitor Arm</h2>
-            <p class="product-description">Supports ultrawide displays up to 34 inches (19.8 lbs). Quick-release VESA 75/100 plate, integrated cable management channel.</p>
-            <div class="stock-indicator in-stock">
-              <span>●</span>
-              <span>In Stock (35 units)</span>
-            </div>
-            <div class="card-footer">
-              <span class="product-price">$74.00</span>
-              <button class="btn-add-cart" type="button">
-                <span>Add to Cart</span>
-              </button>
-            </div>
-          </article>
-        </div>
+        <!-- Filled dynamically by app.js -->
+        <div id="products-grid" class="products-grid"></div>
       </section>
 
-      <!-- Cart Sidebar Area -->
+      <!-- Cart Sidebar -->
       <aside class="cart-sidebar" aria-label="Shopping Cart and Order Summary">
         <div class="cart-card">
           <div class="cart-card-header">
             <h2 class="cart-card-title">Order Summary</h2>
-            <span class="cart-card-count">0 items</span>
+            <span id="cart-item-count" class="cart-card-count">0 items</span>
           </div>
 
-          <div class="cart-empty-state">
+          <!-- Empty state — shown by JS when cart is empty -->
+          <div id="cart-empty-state" class="cart-empty-state">
             <svg class="cart-empty-icon" viewBox="0 0 24 24">
               <circle cx="9" cy="21" r="1"></circle>
               <circle cx="20" cy="21" r="1"></circle>
               <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
             </svg>
             <h3 class="cart-empty-title">Cart is Empty</h3>
-            <p class="cart-empty-desc">Select items from the catalog to build an order. Interactive cart state will be connected in Stage 2.</p>
+            <p class="cart-empty-desc">Add items from the catalog to build your order.</p>
           </div>
+
+          <!-- Cart line items — filled by app.js -->
+          <div id="cart-body" class="cart-body" style="display:none;"></div>
 
           <div class="cart-card-summary">
             <div class="summary-row">
               <span>Subtotal</span>
-              <span>$0.00</span>
+              <span id="summary-subtotal">$0.00</span>
             </div>
             <div class="summary-row">
               <span>Estimated Tax (8%)</span>
-              <span>$0.00</span>
-            </div>
-            <div class="summary-row">
-              <span>Standard Shipping</span>
-              <span>$0.00</span>
+              <span id="summary-tax">$0.00</span>
             </div>
             <div class="summary-row total-row">
               <span>Total</span>
-              <span>$0.00</span>
+              <span id="summary-total">$0.00</span>
             </div>
-            <button class="btn-checkout" type="button" disabled>Checkout Disabled (Stage 1)</button>
+            <button id="btn-checkout" class="btn-checkout" type="button" disabled>Cart is empty</button>
           </div>
         </div>
 
@@ -339,6 +170,31 @@
         </div>
       </aside>
     </div>
+
+    <!-- Fault Panel (collapsed) -->
+    <details class="fault-panel" id="fault-panel">
+      <summary class="fault-panel-summary">
+        <span class="fault-panel-icon">⚡</span>
+        Fault Injection Panel
+        <span class="fault-panel-badge">Stage 2 — UI only, no network</span>
+      </summary>
+      <div class="fault-panel-body">
+        <div class="fault-panel-header">
+          <div>
+            <p class="fault-panel-desc">
+              Simulate service failures and degradation scenarios for observability testing.
+              Buttons update status text only in Stage 2 — real injection wired in Stage 4.
+            </p>
+            <div class="fault-status-row">
+              <span class="fault-status-label">Status:</span>
+              <span id="fault-status-text" class="fault-status-text" data-state="idle">System nominal</span>
+            </div>
+          </div>
+          <button id="fault-reset-btn" class="fault-reset-btn" type="button">Reset All Faults</button>
+        </div>
+        <div id="fault-list" class="fault-list"></div>
+      </div>
+    </details>
   </main>
 
   <!-- Site Footer -->
@@ -377,25 +233,6 @@
     </div>
   </footer>
 
-  <!-- Theme Toggle Script -->
-  <script>
-    (function() {
-      const toggleBtn = document.getElementById('theme-toggle');
-      const toggleText = document.getElementById('theme-toggle-text');
-      function updateText() {
-        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        if (toggleText) toggleText.textContent = isDark ? 'Light' : 'Dark';
-      }
-      updateText();
-      toggleBtn?.addEventListener('click', function() {
-        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        const next = isDark ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        localStorage.setItem('shoplite_theme', next);
-        updateText();
-      });
-    })();
-  </script>
-
+  <script src="app.js"></script>
 </body>
 </html>
