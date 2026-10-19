@@ -1,1 +1,10 @@
-services: {}
+services:
+  frontend:
+    container_name: frontend
+    build:
+      context: ./demo
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      - PYTHONUNBUFFERED=1

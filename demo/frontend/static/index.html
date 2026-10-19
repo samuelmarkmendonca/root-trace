@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShopLite — Hardware &amp; Developer Peripherals</title>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('shoplite_theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Top System Environment Strip -->
+  <aside class="system-banner" aria-label="System Environment Banner">
+    <div class="system-banner-inner">
+      <div class="system-badge">
+        <span class="status-dot"></span>
+        <span>Environment: Testbed Demo (frontend:8001)</span>
+      </div>
+      <div class="system-meta">
+        <span>Scraped by Prometheus • Logs to Loki via Alloy</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="brand-section">
+        <div class="brand-mark">SL</div>
+        <div class="brand-info">
+          <span class="brand-title">ShopLite</span>
+          <span class="brand-tagline">Hardware &amp; Developer Peripherals</span>
+        </div>
+      </div>
+
+      <nav aria-label="Main Navigation">
+        <ul class="nav-links">
+          <li class="nav-item active"><a href="#">Catalog</a></li>
+          <li class="nav-item"><a href="#">Orders</a></li>
+          <li class="nav-item"><a href="/health">Health API</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <!-- Monochrome Dark Mode Toggle -->
+        <button id="theme-toggle" class="theme-toggle-btn" type="button" aria-label="Toggle monochrome dark theme">
+          <svg class="theme-toggle-icon" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <span id="theme-toggle-text">Dark</span>
+        </button>
+
+        <div class="cart-indicator" title="Shopping Cart">
+          <svg class="cart-icon" viewBox="0 0 24 24">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          <span>Cart</span>
+          <span class="cart-count-badge">0</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="app-main">
+    <div class="page-intro">
+      <div>
+        <h1 class="page-title">Hardware Catalog</h1>
+        <p class="page-desc">High-reliability developer workstations, ergonomic peripherals, and dock hardware.</p>
+      </div>
+      <div class="catalog-status">
+        <span>Telemetry Status: Active</span>
+        <span>•</span>
+        <span>Service: frontend</span>
+      </div>
+    </div>
+
+    <div class="content-layout">
+      <!-- Catalog Products Area -->
+      <section class="products-section" aria-label="Available Products">
+        <div class="catalog-toolbar">
+          <div class="filter-group">
+            <button class="filter-btn active" type="button">All Items (6)</button>
+            <button class="filter-btn" type="button">Keyboards</button>
+            <button class="filter-btn" type="button">Displays</button>
+            <button class="filter-btn" type="button">Accessories</button>
+          </div>
+          <span class="item-count-text">Showing 6 products</span>
+        </div>
+
+        <div class="products-grid">
+          <!-- Product 1 -->
+          <article class="product-card" data-product-id="1">
+            <div class="card-header">
+              <span class="sku-tag">SKU-8821</span>
+              <span class="category-tag">Keyboards</span>
+            </div>
+            <div class="product-schematic" aria-hidden="true">
+              <svg class="schematic-svg" viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="1"></rect>
+                <line x1="6" y1="8" x2="6" y2="8.01"></line>
+                <line x1="10" y1="8" x2="10" y2="8.01"></line>
+                <line x1="14" y1="8" x2="14" y2="8.01"></line>
+                <line x1="18" y1="8" x2="18" y2="8.01"></line>
+                <line x1="6" y1="12" x2="6" y2="12.01"></line>
+                <line x1="10" y1="12" x2="10" y2="12.01"></line>
+                <line x1="14" y1="12" x2="14" y2="12.01"></line>
+                <line x1="18" y1="12" x2="18" y2="12.01"></line>
+                <line x1="8" y1="16" x2="16" y2="16"></line>
+              </svg>
+            </div>
+            <h2 class="product-title">Keychron Q1 Pro Mechanical Keyboard</h2>
+            <p class="product-description">75% layout custom mechanical keyboard, fully CNC machined aluminum body, hot-swappable switches, double-gasket dampening.</p>
+            <div class="stock-indicator in-stock">
+              <span>●</span>
+              <span>In Stock (14 units)</span>
+            </div>
+            <div class="card-footer">
+              <span class="product-price">$199.00</span>
+              <button class="btn-add-cart" type="button">
+                <span>Add to Cart</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- Product 2 -->
+          <article class="product-card" data-product-id="2">
+            <div class="card-header">
+              <span class="sku-tag">SKU-4412</span>
+              <span class="category-tag">Peripherals</span>
+            </div>
+            <div class="product-schematic" aria-hidden="true">
+              <svg class="schematic-svg" viewBox="0 0 24 24">
+                <rect x="5" y="2" width="14" height="20" rx="4"></rect>
+                <line x1="12" y1="6" x2="12" y2="10"></line>
+              </svg>
+            </div>
+            <h2 class="product-title">Logitech MX Master 3S Mouse</h2>
+            <p class="product-description">8,000 DPI Darkfield sensor tracks on glass. Quiet clicks, MagSpeed electromagnetic scroll wheel, USB-C fast recharging.</p>
+            <div class="stock-indicator in-stock">
+              <span>●</span>
+              <span>In Stock (28 units)</span>
+            </div>
+            <div class="card-footer">
+              <span class="product-price">$99.00</span>
+              <button class="btn-add-cart" type="button">
+                <span>Add to Cart</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- Product 3 -->
+          <article class="product-card" data-product-id="3">
+            <div class="card-header">
+              <span class="sku-tag">SKU-9905</span>
+              <span class="category-tag">Displays</span>
+            </div>
+            <div class="product-schematic" aria-hidden="true">
+              <svg class="schematic-svg" viewBox="0 0 24 24">
+                <rect x="2" y="3" width="20" height="14" rx="1"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+            </div>
+            <h2 class="product-title">Dell UltraSharp 27" 4K Monitor</h2>
+            <p class="product-description">U2723QE IPS Black panel with 2000:1 contrast ratio. 98% DCI-P3 color gamut, 90W USB-C hub connectivity with RJ45 Ethernet.</p>
+            <div class="stock-indicator in-stock">
+              <span>●</span>
+              <span>In Stock (6 units)</span>
+            </div>
+            <div class="card-footer">
+              <span class="product-price">$489.00</span>
+              <button class="btn-add-cart" type="button">
+                <span>Add to Cart</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- Product 4 -->
+          <article class="product-card" data-product-id="4">
+            <div class="card-header">
+              <span class="sku-tag">SKU-2319</span>
+              <span class="category-tag">Audio</span>
+            </div>
+            <div class="product-schematic" aria-hidden="true">
+              <svg class="schematic-svg" viewBox="0 0 24 24">
+                <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+                <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+              </svg>
+            </div>
+            <h2 class="product-title">Sony WH-1000XM5 Headset</h2>
+            <p class="product-description">Active noise cancellation powered by dual V1/QN1 processors. 8 beamforming mics with AI noise reduction for crisp voice calls.</p>
+            <div class="stock-indicator in-stock">
+              <span>●</span>
+              <span>In Stock (19 units)</span>
+            </div>
+            <div class="card-footer">
+              <span class="product-price">$279.00</span>
+              <button class="btn-add-cart" type="button">
+                <span>Add to Cart</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- Product 5 -->
+          <article class="product-card" data-product-id="5">
+            <div class="card-header">
+              <span class="sku-tag">SKU-6120</span>
+              <span class="category-tag">Hardware</span>
+            </div>
+            <div class="product-schematic" aria-hidden="true">
+              <svg class="schematic-svg" viewBox="0 0 24 24">
+                <rect x="2" y="7" width="20" height="10" rx="1"></rect>
+                <line x1="6" y1="12" x2="8" y2="12"></line>
+                <line x1="11" y1="12" x2="13" y2="12"></line>
+                <line x1="16" y1="12" x2="18" y2="12"></line>
+              </svg>
+            </div>
+            <h2 class="product-title">CalDigit TS4 Thunderbolt 4 Dock</h2>
+            <p class="product-description">18 input/output ports with 98W host charging, 2.5 Gigabit Ethernet, dual 4K/60Hz monitor support, and front UHS-II SD reader.</p>
+            <div class="stock-indicator low-stock">
+              <span>●</span>
+              <span>Low Stock (3 units)</span>
+            </div>
+            <div class="card-footer">
+              <span class="product-price">$379.00</span>
+              <button class="btn-add-cart" type="button">
+                <span>Add to Cart</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- Product 6 -->
+          <article class="product-card" data-product-id="6">
+            <div class="card-header">
+              <span class="sku-tag">SKU-1084</span>
+              <span class="category-tag">Accessories</span>
+            </div>
+            <div class="product-schematic" aria-hidden="true">
+              <svg class="schematic-svg" viewBox="0 0 24 24">
+                <path d="M12 2v8"></path>
+                <path d="M4 10h16"></path>
+                <rect x="8" y="14" width="8" height="6" rx="1"></rect>
+                <line x1="12" y1="10" x2="12" y2="14"></line>
+              </svg>
+            </div>
+            <h2 class="product-title">Heavy-Duty Gas Spring Monitor Arm</h2>
+            <p class="product-description">Supports ultrawide displays up to 34 inches (19.8 lbs). Quick-release VESA 75/100 plate, integrated cable management channel.</p>
+            <div class="stock-indicator in-stock">
+              <span>●</span>
+              <span>In Stock (35 units)</span>
+            </div>
+            <div class="card-footer">
+              <span class="product-price">$74.00</span>
+              <button class="btn-add-cart" type="button">
+                <span>Add to Cart</span>
+              </button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Cart Sidebar Area -->
+      <aside class="cart-sidebar" aria-label="Shopping Cart and Order Summary">
+        <div class="cart-card">
+          <div class="cart-card-header">
+            <h2 class="cart-card-title">Order Summary</h2>
+            <span class="cart-card-count">0 items</span>
+          </div>
+
+          <div class="cart-empty-state">
+            <svg class="cart-empty-icon" viewBox="0 0 24 24">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            <h3 class="cart-empty-title">Cart is Empty</h3>
+            <p class="cart-empty-desc">Select items from the catalog to build an order. Interactive cart state will be connected in Stage 2.</p>
+          </div>
+
+          <div class="cart-card-summary">
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span>$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Estimated Tax (8%)</span>
+              <span>$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Standard Shipping</span>
+              <span>$0.00</span>
+            </div>
+            <div class="summary-row total-row">
+              <span>Total</span>
+              <span>$0.00</span>
+            </div>
+            <button class="btn-checkout" type="button" disabled>Checkout Disabled (Stage 1)</button>
+          </div>
+        </div>
+
+        <div class="cart-sidebar-info">
+          <h3 class="info-title">Service Details</h3>
+          <ul class="info-list">
+            <li class="info-item">
+              <span class="info-label">Active Node:</span>
+              <span class="info-value">frontend</span>
+            </li>
+            <li class="info-item">
+              <span class="info-label">Internal Port:</span>
+              <span class="info-value">8001</span>
+            </li>
+            <li class="info-item">
+              <span class="info-label">Downstream:</span>
+              <span class="info-value">checkout:8002</span>
+            </li>
+            <li class="info-item">
+              <span class="info-label">Architecture:</span>
+              <span class="info-value">FastAPI + Static</span>
+            </li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <div>
+          <h4 class="footer-col-title">ShopLite Testbed App</h4>
+          <p class="footer-text">
+            Simulated 3-tier microservice architecture constructed for autonomous incident diagnosis and observability testing.
+            Exposes Prometheus metrics, structured logs, and deterministic fault injection endpoints.
+          </p>
+        </div>
+        <div>
+          <h4 class="footer-col-title">Telemetry Pipelines</h4>
+          <ul class="footer-links">
+            <li>Metrics: Prometheus (/metrics)</li>
+            <li>Logs: Alloy stdout to Loki</li>
+            <li>Traces: OpenTelemetry (Stage 13)</li>
+            <li>Infra: Docker Engine API</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-col-title">Quick Endpoints</h4>
+          <ul class="footer-links">
+            <li><a href="/health">GET /health</a></li>
+            <li><a href="#">GET /metrics (Stage 4)</a></li>
+            <li><a href="#">POST /api/checkout (Stage 3)</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>ShopLite Microservices — Frontend Service v1.0.0</span>
+        <span>Python 3.12 • FastAPI</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Theme Toggle Script -->
+  <script>
+    (function() {
+      const toggleBtn = document.getElementById('theme-toggle');
+      const toggleText = document.getElementById('theme-toggle-text');
+      function updateText() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (toggleText) toggleText.textContent = isDark ? 'Light' : 'Dark';
+      }
+      updateText();
+      toggleBtn?.addEventListener('click', function() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const next = isDark ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('shoplite_theme', next);
+        updateText();
+      });
+    })();
+  </script>
+
+</body>
+</html>
