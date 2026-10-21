@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: frontend
+    static_configs:
+      - targets: ["frontend:8000"]
+
+  - job_name: checkout
+    static_configs:
+      - targets: ["checkout:8000"]
+
+  - job_name: db
+    static_configs:
+      - targets: ["db:8000"]

@@ -59,3 +59,19 @@ services:
     depends_on:
       - frontend
     logging: *default-logging
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:v2.55.1
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=6h"
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - frontend
+      - checkout
+      - db
+    logging: *default-logging
