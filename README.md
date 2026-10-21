@@ -110,3 +110,30 @@ Local testing (no Docker required for core algorithmic units):
 cd investigator
 pytest
 ```
+
+## Telemetry & Fault Verification (Stage 7)
+
+Query the investigator endpoint for a service:
+```sh
+curl.exe -s --json '{"service":"checkout","window_minutes":5}' http://localhost:8000/investigations
+```
+
+Inject a fault (e.g. database errors):
+```sh
+python scripts/inject_fault.py db_errors
+```
+Wait ~60 seconds for the Prometheus scrape interval and 1m rate window, then re-query:
+```sh
+curl.exe -s --json '{"service":"checkout","window_minutes":5}' http://localhost:8000/investigations
+curl.exe -s --json '{"service":"db","window_minutes":5}' http://localhost:8000/investigations
+```
+
+Test database latency injection (800ms):
+```sh
+python scripts/inject_fault.py db_latency
+```
+
+Reset all faults:
+```sh
+python scripts/inject_fault.py reset
+```

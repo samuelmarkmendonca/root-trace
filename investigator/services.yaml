@@ -1,0 +1,4 @@
+services:
+  frontend: {container: frontend, depends_on: [checkout]}
+  checkout: {container: checkout, depends_on: [db]}
+  db:       {container: db,       depends_on: []}
