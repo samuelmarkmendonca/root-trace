@@ -1,12 +1,16 @@
+import asyncio
 from contextlib import asynccontextmanager
 import logging
 import os
+import random
 import sys
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 import httpx
 from pydantic import BaseModel
+
+from common.observability import setup_observability
 
 SERVICE = os.getenv("SERVICE_NAME", "checkout")
 DB_URL = os.getenv("DB_URL", "http://db:8000")
@@ -21,6 +25,24 @@ logger = logging.getLogger(SERVICE)
 
 client: Optional[httpx.AsyncClient] = None
 
+# Fault state
+faults = {
+    "latency_ms": 0,
+    "error_rate": 0.0,
+    "leak_mb": 0,
+}
+leak_memory: list[bytearray] = []
+
+
+async def apply_faults():
+    if faults["latency_ms"]:
+        await asyncio.sleep(faults["latency_ms"] / 1000)
+    if faults["leak_mb"]:
+        leak_memory.append(bytearray(faults["leak_mb"] * 1024 * 1024))
+    if faults["error_rate"] > 0 and random.random() < faults["error_rate"]:
+        logger.error("injected fault: internal error while handling request")
+        raise HTTPException(status_code=500, detail="injected fault: internal error while handling request")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -32,6 +54,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="ShopLite Checkout Service", lifespan=lifespan)
+setup_observability(app)
 
 
 class CheckoutRequest(BaseModel):
@@ -44,8 +67,44 @@ def health():
     return {"status": "ok"}
 
 
+# --- Fault endpoints ---
+
+@app.post("/fault/latency")
+async def fault_latency(ms: int = 800):
+    faults["latency_ms"] = ms
+    logger.warning("fault set: latency_ms=%d", ms)
+    return {"status": "ok", "latency_ms": ms}
+
+
+@app.post("/fault/errors")
+async def fault_errors(rate: float = 0.4):
+    faults["error_rate"] = rate
+    logger.warning("fault set: error_rate=%.2f", rate)
+    return {"status": "ok", "error_rate": rate}
+
+
+@app.post("/fault/leak")
+async def fault_leak(mb_per_request: int = 1):
+    faults["leak_mb"] = mb_per_request
+    logger.warning("fault set: leak_mb=%d", mb_per_request)
+    return {"status": "ok", "leak_mb": mb_per_request}
+
+
+@app.post("/fault/reset")
+async def fault_reset():
+    faults["latency_ms"] = 0
+    faults["error_rate"] = 0.0
+    faults["leak_mb"] = 0
+    leak_memory.clear()
+    logger.warning("fault reset: all faults cleared")
+    return {"status": "ok"}
+
+
+# --- Product & Checkout endpoints ---
+
 @app.get("/products")
 async def get_products():
+    await apply_faults()
     assert client is not None
     try:
         r = await client.get(f"{DB_URL}/products")
@@ -65,7 +124,9 @@ async def get_products():
 
 @app.post("/checkout")
 async def checkout(req: CheckoutRequest):
+    await apply_faults()
     assert client is not None
+
     # 1. Check stock via db: GET /products/{id}
     try:
         r = await client.get(f"{DB_URL}/products/{req.product_id}")

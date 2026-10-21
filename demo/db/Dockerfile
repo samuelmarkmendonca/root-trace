@@ -7,6 +7,7 @@ WORKDIR /app
 COPY db/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+COPY common/ ./common/
 COPY db/ .
 
 EXPOSE 8000

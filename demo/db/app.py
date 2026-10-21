@@ -9,6 +9,8 @@ from typing import Optional
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
+from common.observability import setup_observability
+
 SERVICE = os.getenv("SERVICE_NAME", "db")
 DB_PATH = os.getenv("SQLITE_PATH", "shop.db")
 POOL_SIZE = int(os.getenv("DB_POOL_SIZE", "5"))
@@ -23,6 +25,21 @@ logger = logging.getLogger(SERVICE)
 
 # Simulated connection pool semaphore
 pool_semaphore = asyncio.Semaphore(POOL_SIZE)
+
+# Fault state
+faults = {
+    "latency_ms": 0,
+    "error_rate": 0.0,
+}
+pool_holder_tasks: list[asyncio.Task] = []
+
+
+async def apply_faults():
+    if faults["latency_ms"]:
+        await asyncio.sleep(faults["latency_ms"] / 1000)
+    if faults["error_rate"] > 0 and random.random() < faults["error_rate"]:
+        logger.error("injected fault: internal error while handling request")
+        raise HTTPException(status_code=500, detail="injected fault: internal error while handling request")
 
 
 @asynccontextmanager
@@ -99,9 +116,12 @@ async def lifespan(app: FastAPI):
     init_db()
     logger.info("db service started with pool size %d", POOL_SIZE)
     yield
+    for task in pool_holder_tasks:
+        task.cancel()
 
 
 app = FastAPI(title="ShopLite DB Service", lifespan=lifespan)
+setup_observability(app)
 
 
 class OrderCreate(BaseModel):
@@ -115,20 +135,85 @@ def health():
     return {"status": "ok"}
 
 
+# --- Fault endpoints ---
+
+@app.post("/fault/latency")
+async def fault_latency(ms: int = 800):
+    faults["latency_ms"] = ms
+    logger.warning("fault set: latency_ms=%d", ms)
+    return {"status": "ok", "latency_ms": ms}
+
+
+@app.post("/fault/errors")
+async def fault_errors(rate: float = 0.6):
+    faults["error_rate"] = rate
+    logger.warning("fault set: error_rate=%.2f", rate)
+    return {"status": "ok", "error_rate": rate}
+
+
+async def hold_slot(duration: float):
+    try:
+        await pool_semaphore.acquire()
+        await asyncio.sleep(duration)
+    except asyncio.CancelledError:
+        pass
+    finally:
+        pool_semaphore.release()
+
+
+@app.post("/fault/pool")
+async def fault_pool(hold_seconds: int = 60):
+    logger.warning("fault set: pool exhausted for %ds", hold_seconds)
+    for _ in range(POOL_SIZE):
+        task = asyncio.create_task(hold_slot(float(hold_seconds)))
+        pool_holder_tasks.append(task)
+    return {"status": "ok", "held_slots": POOL_SIZE, "hold_seconds": hold_seconds}
+
+
+@app.post("/fault/reset")
+async def fault_reset():
+    faults["latency_ms"] = 0
+    faults["error_rate"] = 0.0
+    for task in pool_holder_tasks:
+        task.cancel()
+    pool_holder_tasks.clear()
+    def _reset_stock():
+        with get_db() as conn:
+            conn.execute("UPDATE products SET stock = 50")
+            conn.commit()
+    await asyncio.to_thread(_reset_stock)
+    logger.warning("fault reset: all faults cleared")
+    return {"status": "ok"}
+
+
+# --- Product & Order endpoints ---
+
 @app.get("/products")
 async def get_products():
+    await apply_faults()
     async with db_slot():
         def _query():
             with get_db() as conn:
                 rows = conn.execute(
                     "SELECT id, sku, name, category, description, price, stock FROM products"
                 ).fetchall()
+                replenished = False
+                for r in rows:
+                    if r["stock"] <= 5:
+                        conn.execute("UPDATE products SET stock = 50 WHERE id = ?", (r["id"],))
+                        replenished = True
+                if replenished:
+                    conn.commit()
+                    rows = conn.execute(
+                        "SELECT id, sku, name, category, description, price, stock FROM products"
+                    ).fetchall()
                 return [dict(r) for r in rows]
         return await asyncio.to_thread(_query)
 
 
 @app.get("/products/{product_id}")
 async def get_product(product_id: int):
+    await apply_faults()
     async with db_slot():
         def _query():
             with get_db() as conn:
@@ -136,6 +221,13 @@ async def get_product(product_id: int):
                     "SELECT id, sku, name, category, description, price, stock FROM products WHERE id = ?",
                     (product_id,)
                 ).fetchone()
+                if row and row["stock"] <= 5:
+                    conn.execute("UPDATE products SET stock = 50 WHERE id = ?", (product_id,))
+                    conn.commit()
+                    row = conn.execute(
+                        "SELECT id, sku, name, category, description, price, stock FROM products WHERE id = ?",
+                        (product_id,)
+                    ).fetchone()
                 return dict(row) if row else None
         p = await asyncio.to_thread(_query)
         if not p:
@@ -145,6 +237,7 @@ async def get_product(product_id: int):
 
 @app.post("/orders")
 async def create_order(order: OrderCreate):
+    await apply_faults()
     async with db_slot():
         def _transact():
             with get_db() as conn:
@@ -155,7 +248,8 @@ async def create_order(order: OrderCreate):
                 if not row:
                     return None, "Product not found", 404
                 if row["stock"] < order.qty:
-                    return None, "Insufficient stock", 400
+                    conn.execute("UPDATE products SET stock = 100 WHERE id = ?", (order.product_id,))
+                    row = conn.execute("SELECT id, price, stock FROM products WHERE id = ?", (order.product_id,)).fetchone()
 
                 total = order.total_price if order.total_price is not None else round(row["price"] * order.qty, 2)
                 order_id = f"ORD-{random.randint(100000, 999999)}"
@@ -184,6 +278,7 @@ async def create_order(order: OrderCreate):
 
 @app.get("/orders")
 async def get_orders():
+    await apply_faults()
     async with db_slot():
         def _query():
             with get_db() as conn:

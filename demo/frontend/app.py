@@ -5,9 +5,11 @@ from pathlib import Path
 import sys
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.staticfiles import StaticFiles
 import httpx
+
+from common.observability import setup_observability
 
 SERVICE = os.getenv("SERVICE_NAME", "frontend")
 CHECKOUT_URL = os.getenv("CHECKOUT_URL", "http://checkout:8000")
@@ -22,6 +24,9 @@ logger = logging.getLogger(SERVICE)
 
 client: Optional[httpx.AsyncClient] = None
 
+ALLOWED_SERVICES = {"db", "checkout"}
+ALLOWED_KINDS = {"latency", "errors", "pool", "leak", "reset"}
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -33,6 +38,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="ShopLite Frontend", lifespan=lifespan)
+setup_observability(app)
 
 
 @app.get("/health")
@@ -80,6 +86,34 @@ async def proxy_checkout(request: Request):
         raise HTTPException(status_code=r.status_code, detail=r.text)
 
     return r.json()
+
+
+@app.post("/admin/fault/{service}/{kind}")
+async def proxy_fault(service: str, kind: str, request: Request):
+    assert client is not None
+    if service not in ALLOWED_SERVICES:
+        raise HTTPException(status_code=400, detail=f"Service '{service}' not permitted")
+    if kind not in ALLOWED_KINDS:
+        raise HTTPException(status_code=400, detail=f"Fault kind '{kind}' not permitted")
+
+    url = f"http://{service}:8000/fault/{kind}"
+    query_params = dict(request.query_params)
+    body = await request.body()
+    try:
+        r = await client.post(
+            url,
+            params=query_params,
+            content=body,
+            headers={"Content-Type": request.headers.get("Content-Type", "application/json")}
+        )
+        return Response(
+            content=r.content,
+            status_code=r.status_code,
+            media_type=r.headers.get("content-type", "application/json")
+        )
+    except Exception as e:
+        logger.error("downstream call failed: %s %s", type(e).__name__, e)
+        raise HTTPException(status_code=502, detail=f"Failed to communicate with {service}")
 
 
 # Mount static files at root directory; html=True serves index.html for GET /
