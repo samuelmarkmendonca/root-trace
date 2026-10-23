@@ -6,15 +6,22 @@ import yaml
 
 
 class Settings(BaseSettings):
-    prometheus_url: str = os.getenv("PROMETHEUS_URL", "http://prometheus:9090")
-    loki_url: str = os.getenv("LOKI_URL", "http://loki:3100")
-    services_file: str = os.getenv("SERVICES_FILE", "services.yaml")
-    deploys_file: str = os.getenv("DEPLOYS_FILE", "data/deploys.json")
+    prometheus_url: str = "http://prometheus:9090"
+    loki_url: str = "http://loki:3100"
+    services_file: str = "services.yaml"
+    deploys_file: str = "data/deploys.json"
     max_window_minutes: int = 120
     default_window_minutes: int = 15
 
+    # LLM Agent configuration
+    llm_url: str = "http://localhost:11434/v1"
+    llm_model: str = "qwen2.5:7b-8k"
+    llm_api_key: str = "ollama"
+    llm_temperature: float = 0.1
+    llm_max_steps: int = 6
+
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=(".env", "../.env"),
         env_file_encoding="utf-8",
         extra="ignore",
     )
@@ -28,9 +35,13 @@ def load_services_config(filepath: str | Path | None = None) -> Dict[str, Any]:
     if not path.is_absolute():
         candidates = [
             path,
+            Path(path.name),
             Path(__file__).resolve().parent / path,
             Path(__file__).resolve().parent.parent / path,
+            Path(__file__).resolve().parent.parent / path.name,
+            Path(__file__).resolve().parent.parent.parent / path,
             Path("/app") / path,
+            Path("/app") / path.name,
         ]
         for c in candidates:
             if c.exists():

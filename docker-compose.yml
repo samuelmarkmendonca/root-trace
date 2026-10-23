@@ -112,6 +112,11 @@ services:
       - PROMETHEUS_URL=http://prometheus:9090
       - LOKI_URL=http://loki:3100
       - DEPLOYS_FILE=/data/deploys.json
+      - LLM_URL=${LLM_URL:-http://host.docker.internal:11434/v1}
+      - LLM_MODEL=${LLM_MODEL:-qwen2.5:7b-8k}
+      - LLM_API_KEY=${LLM_API_KEY:-ollama}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./data/deploys.json:/data/deploys.json:ro
