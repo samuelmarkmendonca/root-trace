@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     prometheus_url: str = os.getenv("PROMETHEUS_URL", "http://prometheus:9090")
     loki_url: str = os.getenv("LOKI_URL", "http://loki:3100")
     services_file: str = os.getenv("SERVICES_FILE", "services.yaml")
+    deploys_file: str = os.getenv("DEPLOYS_FILE", "data/deploys.json")
     max_window_minutes: int = 120
     default_window_minutes: int = 15
 
@@ -42,3 +43,32 @@ def load_services_config(filepath: str | Path | None = None) -> Dict[str, Any]:
     with open(path, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f) or {}
     return data.get("services", {})
+
+
+def load_deploys(filepath: str | Path | None = None) -> list[Dict[str, Any]]:
+    import json
+    path = Path(filepath or settings.deploys_file)
+    if not path.is_absolute():
+        candidates = [
+            path,
+            Path(__file__).resolve().parent / path,
+            Path(__file__).resolve().parent.parent / path,
+            Path(__file__).resolve().parent.parent.parent / path,
+            Path("/data/deploys.json"),
+        ]
+        for c in candidates:
+            if c.exists():
+                path = c
+                break
+
+    if not path.exists():
+        return []
+
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+            if not content:
+                return []
+            return json.loads(content)
+    except Exception:
+        return []

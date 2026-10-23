@@ -111,8 +111,10 @@ services:
       - PYTHONUNBUFFERED=1
       - PROMETHEUS_URL=http://prometheus:9090
       - LOKI_URL=http://loki:3100
+      - DEPLOYS_FILE=/data/deploys.json
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./data/deploys.json:/data/deploys.json:ro
     depends_on:
       - prometheus
       - loki
