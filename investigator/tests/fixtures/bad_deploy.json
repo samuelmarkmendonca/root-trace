@@ -1,0 +1,309 @@
+{
+  "service": "checkout",
+  "depends_on": [
+    "db"
+  ],
+  "window": {
+    "start": "2026-10-23T16:12:59+00:00",
+    "end": "2026-10-23T16:17:59+00:00",
+    "minutes": 5
+  },
+  "metrics": {
+    "request_rate_per_s": {
+      "baseline": 1.9383,
+      "min": 0.7091,
+      "max": 4.4367,
+      "avg": 3.0274,
+      "last": 4.0774,
+      "peak_at": "2026-10-23T16:14:29+00:00",
+      "jump_at": "2026-10-23T16:14:14+00:00",
+      "points": 21
+    },
+    "error_ratio": {
+      "baseline": 0.1815,
+      "min": 0.0,
+      "max": 0.7541,
+      "avg": 0.2525,
+      "last": 0.3489,
+      "peak_at": "2026-10-23T16:14:29+00:00",
+      "jump_at": "2026-10-23T16:14:14+00:00",
+      "points": 21
+    },
+    "latency_p95_seconds": {
+      "baseline": 1.7309,
+      "min": 0.0895,
+      "max": 2.3917,
+      "avg": 0.5533,
+      "last": 0.0961,
+      "peak_at": "2026-10-23T16:13:14+00:00",
+      "jump_at": null,
+      "points": 21
+    }
+  },
+  "logs": {
+    "lines_scanned": 338,
+    "error_lines": 338,
+    "patterns": [
+      {
+        "count": 251,
+        "pattern": "downstream returned status N",
+        "example": "downstream returned status 500",
+        "first_seen": "2026-10-23T16:13:27+00:00",
+        "last_seen": "2026-10-23T16:15:02+00:00"
+      },
+      {
+        "count": 87,
+        "pattern": "injected fault: internal error while handling request",
+        "example": "injected fault: internal error while handling request",
+        "first_seen": "2026-10-23T16:17:09+00:00",
+        "last_seen": "2026-10-23T16:17:58+00:00"
+      }
+    ],
+    "source": "loki"
+  },
+  "graph": {
+    "nodes": [
+      {
+        "id": "frontend",
+        "container": "frontend",
+        "health": "unhealthy",
+        "details": {
+          "reasons": [
+            "error_ratio (0.7155) > 0.05"
+          ]
+        }
+      },
+      {
+        "id": "checkout",
+        "container": "checkout",
+        "health": "unhealthy",
+        "details": {
+          "reasons": [
+            "error_ratio (0.7541) > 0.05"
+          ]
+        }
+      },
+      {
+        "id": "db",
+        "container": "db",
+        "health": "unhealthy",
+        "details": {
+          "reasons": [
+            "error_ratio (0.4902) > 0.05"
+          ]
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "frontend",
+        "to": "checkout"
+      },
+      {
+        "from": "checkout",
+        "to": "db"
+      }
+    ]
+  },
+  "candidates": [
+    {
+      "service": "db",
+      "reason": "error_ratio (0.4902) > 0.05 (no unhealthy dependencies)",
+      "is_down": false
+    }
+  ],
+  "timeline": [
+    {
+      "timestamp": "2026-10-23T16:13:27+00:00",
+      "epoch": 1792772007.0,
+      "type": "log_pattern",
+      "service": "frontend",
+      "description": "First seen error pattern: 'downstream returned status N' (seen 338 times)",
+      "details": {
+        "count": 338,
+        "pattern": "downstream returned status N",
+        "example": "downstream returned status 502",
+        "first_seen": "2026-10-23T16:13:27+00:00",
+        "last_seen": "2026-10-23T16:17:58+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:13:27+00:00",
+      "epoch": 1792772007.0,
+      "type": "log_pattern",
+      "service": "checkout",
+      "description": "First seen error pattern: 'downstream returned status N' (seen 251 times)",
+      "details": {
+        "count": 251,
+        "pattern": "downstream returned status N",
+        "example": "downstream returned status 500",
+        "first_seen": "2026-10-23T16:13:27+00:00",
+        "last_seen": "2026-10-23T16:15:02+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:13:27+00:00",
+      "epoch": 1792772007.0,
+      "type": "log_pattern",
+      "service": "db",
+      "description": "First seen error pattern: 'injected fault: internal error while handling request' (seen 193 times)",
+      "details": {
+        "count": 193,
+        "pattern": "injected fault: internal error while handling request",
+        "example": "injected fault: internal error while handling request",
+        "first_seen": "2026-10-23T16:13:27+00:00",
+        "last_seen": "2026-10-23T16:14:18+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:14:14+00:00",
+      "epoch": 1792772054.0,
+      "type": "metric_jump",
+      "service": "frontend",
+      "description": "Metric request_rate_per_s jumped to 4.3458 (baseline 2.0401)",
+      "details": {
+        "metric": "request_rate_per_s",
+        "baseline": 2.0401,
+        "max": 4.3458,
+        "peak_at": "2026-10-23T16:14:14+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:14:14+00:00",
+      "epoch": 1792772054.0,
+      "type": "metric_jump",
+      "service": "frontend",
+      "description": "Metric error_ratio jumped to 0.7155 (baseline 0.2135)",
+      "details": {
+        "metric": "error_ratio",
+        "baseline": 0.2135,
+        "max": 0.7155,
+        "peak_at": "2026-10-23T16:14:14+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:14:14+00:00",
+      "epoch": 1792772054.0,
+      "type": "metric_jump",
+      "service": "checkout",
+      "description": "Metric request_rate_per_s jumped to 4.4367 (baseline 1.9383)",
+      "details": {
+        "metric": "request_rate_per_s",
+        "baseline": 1.9383,
+        "max": 4.4367,
+        "peak_at": "2026-10-23T16:14:29+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:14:14+00:00",
+      "epoch": 1792772054.0,
+      "type": "metric_jump",
+      "service": "checkout",
+      "description": "Metric error_ratio jumped to 0.7541 (baseline 0.1815)",
+      "details": {
+        "metric": "error_ratio",
+        "baseline": 0.1815,
+        "max": 0.7541,
+        "peak_at": "2026-10-23T16:14:29+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:14:14+00:00",
+      "epoch": 1792772054.0,
+      "type": "metric_jump",
+      "service": "db",
+      "description": "Metric error_ratio jumped to 0.4902 (baseline 0.1149)",
+      "details": {
+        "metric": "error_ratio",
+        "baseline": 0.1149,
+        "max": 0.4902,
+        "peak_at": "2026-10-23T16:14:29+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:14:36+00:00",
+      "epoch": 1792772076.0,
+      "type": "log_pattern",
+      "service": "db",
+      "description": "First seen error pattern: 'connection pool exhausted' (seen 58 times)",
+      "details": {
+        "count": 58,
+        "pattern": "connection pool exhausted",
+        "example": "connection pool exhausted",
+        "first_seen": "2026-10-23T16:14:36+00:00",
+        "last_seen": "2026-10-23T16:15:02+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:15:59+00:00",
+      "epoch": 1792772159.0,
+      "type": "metric_jump",
+      "service": "db",
+      "description": "Metric request_rate_per_s jumped to 7.6551 (baseline 3.5566)",
+      "details": {
+        "metric": "request_rate_per_s",
+        "baseline": 3.5566,
+        "max": 7.6551,
+        "peak_at": "2026-10-23T16:16:14+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:16:28+00:00",
+      "epoch": 1792772188.0,
+      "type": "log_pattern",
+      "service": "frontend",
+      "description": "First seen error pattern: 'downstream call failed: ConnectError All connection attempts failed' (seen 6 times)",
+      "details": {
+        "count": 6,
+        "pattern": "downstream call failed: ConnectError All connection attempts failed",
+        "example": "downstream call failed: ConnectError All connection attempts failed",
+        "first_seen": "2026-10-23T16:16:28+00:00",
+        "last_seen": "2026-10-23T16:16:29+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:16:32+00:00",
+      "epoch": 1792772192.0,
+      "type": "log_pattern",
+      "service": "frontend",
+      "description": "First seen error pattern: 'downstream call failed: ConnectTimeout ' (seen 7 times)",
+      "details": {
+        "count": 7,
+        "pattern": "downstream call failed: ConnectTimeout ",
+        "example": "downstream call failed: ConnectTimeout ",
+        "first_seen": "2026-10-23T16:16:32+00:00",
+        "last_seen": "2026-10-23T16:16:51+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:17:08+00:00",
+      "epoch": 1792772228.0,
+      "type": "deploy",
+      "service": "checkout",
+      "description": "Deploy v2: payment_timeout_ms 2000 -> 50",
+      "details": {
+        "time": 1792772228,
+        "service": "checkout",
+        "version": "v2",
+        "change": "payment_timeout_ms 2000 -> 50"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:17:09+00:00",
+      "epoch": 1792772229.0,
+      "type": "log_pattern",
+      "service": "checkout",
+      "description": "First seen error pattern: 'injected fault: internal error while handling request' (seen 87 times)",
+      "details": {
+        "count": 87,
+        "pattern": "injected fault: internal error while handling request",
+        "example": "injected fault: internal error while handling request",
+        "first_seen": "2026-10-23T16:17:09+00:00",
+        "last_seen": "2026-10-23T16:17:58+00:00"
+      }
+    }
+  ],
+  "fault_id": "bad_deploy",
+  "expected_root_cause_service": "checkout",
+  "expected_root_cause": "bad deploy of checkout"
+}

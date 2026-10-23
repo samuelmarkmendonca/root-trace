@@ -1,0 +1,314 @@
+{
+  "service": "frontend",
+  "depends_on": [
+    "checkout"
+  ],
+  "window": {
+    "start": "2026-10-23T16:11:50+00:00",
+    "end": "2026-10-23T16:16:50+00:00",
+    "minutes": 5
+  },
+  "metrics": {
+    "request_rate_per_s": {
+      "baseline": 3.2402,
+      "min": 1.0183,
+      "max": 4.4003,
+      "avg": 3.1647,
+      "last": 2.6184,
+      "peak_at": "2026-10-23T16:14:20+00:00",
+      "jump_at": null,
+      "points": 21
+    },
+    "error_ratio": {
+      "baseline": 0.0,
+      "min": 0.0,
+      "max": 0.7851,
+      "avg": 0.2263,
+      "last": 0.0764,
+      "peak_at": "2026-10-23T16:14:20+00:00",
+      "jump_at": "2026-10-23T16:13:35+00:00",
+      "points": 21
+    },
+    "latency_p95_seconds": {
+      "baseline": 0.6638,
+      "min": 0.0884,
+      "max": 2.332,
+      "avg": 0.6632,
+      "last": 0.0992,
+      "peak_at": "2026-10-23T16:13:20+00:00",
+      "jump_at": "2026-10-23T16:13:05+00:00",
+      "points": 21
+    }
+  },
+  "logs": {
+    "lines_scanned": 263,
+    "error_lines": 263,
+    "patterns": [
+      {
+        "count": 251,
+        "pattern": "downstream returned status N",
+        "example": "downstream returned status 502",
+        "first_seen": "2026-10-23T16:13:27+00:00",
+        "last_seen": "2026-10-23T16:15:02+00:00"
+      },
+      {
+        "count": 6,
+        "pattern": "downstream call failed: ConnectError All connection attempts failed",
+        "example": "downstream call failed: ConnectError All connection attempts failed",
+        "first_seen": "2026-10-23T16:16:28+00:00",
+        "last_seen": "2026-10-23T16:16:29+00:00"
+      },
+      {
+        "count": 6,
+        "pattern": "downstream call failed: ConnectTimeout ",
+        "example": "downstream call failed: ConnectTimeout ",
+        "first_seen": "2026-10-23T16:16:32+00:00",
+        "last_seen": "2026-10-23T16:16:48+00:00"
+      }
+    ],
+    "source": "loki"
+  },
+  "graph": {
+    "nodes": [
+      {
+        "id": "frontend",
+        "container": "frontend",
+        "health": "unhealthy",
+        "details": {
+          "reasons": [
+            "error_ratio (0.7851) > 0.05",
+            "latency_p95 (2.3320s) > 3x baseline (0.6638s) and > 0.3s"
+          ]
+        }
+      },
+      {
+        "id": "checkout",
+        "container": "checkout",
+        "health": "unhealthy",
+        "details": {
+          "reasons": [
+            "Container down (status: exited)",
+            "error_ratio (0.7942) > 0.05",
+            "latency_p95 (2.3320s) > 3x baseline (0.7041s) and > 0.3s"
+          ]
+        }
+      },
+      {
+        "id": "db",
+        "container": "db",
+        "health": "unhealthy",
+        "details": {
+          "reasons": [
+            "error_ratio (0.5155) > 0.05",
+            "latency_p95 (0.9524s) > 3x baseline (0.2011s) and > 0.3s"
+          ]
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "frontend",
+        "to": "checkout"
+      },
+      {
+        "from": "checkout",
+        "to": "db"
+      }
+    ]
+  },
+  "candidates": [
+    {
+      "service": "checkout",
+      "reason": "Container down (exited)",
+      "is_down": true
+    },
+    {
+      "service": "db",
+      "reason": "error_ratio (0.5155) > 0.05, latency_p95 (0.9524s) > 3x baseline (0.2011s) and > 0.3s (no unhealthy dependencies)",
+      "is_down": false
+    }
+  ],
+  "timeline": [
+    {
+      "timestamp": "2026-10-23T16:13:05+00:00",
+      "epoch": 1792771985.0,
+      "type": "metric_jump",
+      "service": "frontend",
+      "description": "Metric latency_p95_seconds jumped to 2.332 (baseline 0.6638)",
+      "details": {
+        "metric": "latency_p95_seconds",
+        "baseline": 0.6638,
+        "max": 2.332,
+        "peak_at": "2026-10-23T16:13:20+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:13:05+00:00",
+      "epoch": 1792771985.0,
+      "type": "metric_jump",
+      "service": "checkout",
+      "description": "Metric latency_p95_seconds jumped to 2.332 (baseline 0.7041)",
+      "details": {
+        "metric": "latency_p95_seconds",
+        "baseline": 0.7041,
+        "max": 2.332,
+        "peak_at": "2026-10-23T16:13:05+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:13:05+00:00",
+      "epoch": 1792771985.0,
+      "type": "metric_jump",
+      "service": "db",
+      "description": "Metric latency_p95_seconds jumped to 0.9524 (baseline 0.2011)",
+      "details": {
+        "metric": "latency_p95_seconds",
+        "baseline": 0.2011,
+        "max": 0.9524,
+        "peak_at": "2026-10-23T16:13:20+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:13:27+00:00",
+      "epoch": 1792772007.0,
+      "type": "log_pattern",
+      "service": "frontend",
+      "description": "First seen error pattern: 'downstream returned status N' (seen 251 times)",
+      "details": {
+        "count": 251,
+        "pattern": "downstream returned status N",
+        "example": "downstream returned status 502",
+        "first_seen": "2026-10-23T16:13:27+00:00",
+        "last_seen": "2026-10-23T16:15:02+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:13:27+00:00",
+      "epoch": 1792772007.0,
+      "type": "log_pattern",
+      "service": "checkout",
+      "description": "First seen error pattern: 'downstream returned status N' (seen 251 times)",
+      "details": {
+        "count": 251,
+        "pattern": "downstream returned status N",
+        "example": "downstream returned status 500",
+        "first_seen": "2026-10-23T16:13:27+00:00",
+        "last_seen": "2026-10-23T16:15:02+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:13:27+00:00",
+      "epoch": 1792772007.0,
+      "type": "log_pattern",
+      "service": "db",
+      "description": "First seen error pattern: 'injected fault: internal error while handling request' (seen 193 times)",
+      "details": {
+        "count": 193,
+        "pattern": "injected fault: internal error while handling request",
+        "example": "injected fault: internal error while handling request",
+        "first_seen": "2026-10-23T16:13:27+00:00",
+        "last_seen": "2026-10-23T16:14:18+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:13:35+00:00",
+      "epoch": 1792772015.0,
+      "type": "metric_jump",
+      "service": "frontend",
+      "description": "Metric error_ratio jumped to 0.7851 (baseline 0.0)",
+      "details": {
+        "metric": "error_ratio",
+        "baseline": 0.0,
+        "max": 0.7851,
+        "peak_at": "2026-10-23T16:14:20+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:13:35+00:00",
+      "epoch": 1792772015.0,
+      "type": "metric_jump",
+      "service": "checkout",
+      "description": "Metric error_ratio jumped to 0.7942 (baseline 0.0)",
+      "details": {
+        "metric": "error_ratio",
+        "baseline": 0.0,
+        "max": 0.7942,
+        "peak_at": "2026-10-23T16:14:20+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:13:35+00:00",
+      "epoch": 1792772015.0,
+      "type": "metric_jump",
+      "service": "db",
+      "description": "Metric error_ratio jumped to 0.5155 (baseline 0.0)",
+      "details": {
+        "metric": "error_ratio",
+        "baseline": 0.0,
+        "max": 0.5155,
+        "peak_at": "2026-10-23T16:14:20+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:14:36+00:00",
+      "epoch": 1792772076.0,
+      "type": "log_pattern",
+      "service": "db",
+      "description": "First seen error pattern: 'connection pool exhausted' (seen 58 times)",
+      "details": {
+        "count": 58,
+        "pattern": "connection pool exhausted",
+        "example": "connection pool exhausted",
+        "first_seen": "2026-10-23T16:14:36+00:00",
+        "last_seen": "2026-10-23T16:15:02+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:16:28+00:00",
+      "epoch": 1792772188.0,
+      "type": "log_pattern",
+      "service": "frontend",
+      "description": "First seen error pattern: 'downstream call failed: ConnectError All connection attempts failed' (seen 6 times)",
+      "details": {
+        "count": 6,
+        "pattern": "downstream call failed: ConnectError All connection attempts failed",
+        "example": "downstream call failed: ConnectError All connection attempts failed",
+        "first_seen": "2026-10-23T16:16:28+00:00",
+        "last_seen": "2026-10-23T16:16:29+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:16:29+00:00",
+      "epoch": 1792772189.442884,
+      "type": "container_down",
+      "service": "checkout",
+      "description": "Container checkout stopped (status: exited, exit code: 0)",
+      "details": {
+        "status": "exited",
+        "running": false,
+        "restart_count": 0,
+        "oom_killed": false,
+        "exit_code": 0,
+        "started_at": "2026-10-23T15:15:12.414705541Z",
+        "finished_at": "2026-10-23T16:16:29.442884559Z"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:16:32+00:00",
+      "epoch": 1792772192.0,
+      "type": "log_pattern",
+      "service": "frontend",
+      "description": "First seen error pattern: 'downstream call failed: ConnectTimeout ' (seen 6 times)",
+      "details": {
+        "count": 6,
+        "pattern": "downstream call failed: ConnectTimeout ",
+        "example": "downstream call failed: ConnectTimeout ",
+        "first_seen": "2026-10-23T16:16:32+00:00",
+        "last_seen": "2026-10-23T16:16:48+00:00"
+      }
+    }
+  ],
+  "fault_id": "checkout_crash",
+  "expected_root_cause_service": "checkout",
+  "expected_root_cause": "checkout down"
+}

@@ -1,0 +1,66 @@
+faults:
+  - id: db_latency
+    description: "Database queries delayed by 800ms"
+    trigger: "POST db:/fault/latency?ms=800"
+    investigate_service: "checkout"
+    expected_root_cause_service: "db"
+    expected_root_cause: "db slow"
+    symptoms:
+      - "db p95 up"
+      - "checkout p95 up"
+      - "frontend p95 up"
+
+  - id: db_errors
+    description: "Database returning 500 internal errors at 60% rate"
+    trigger: "POST db:/fault/errors?rate=0.6"
+    investigate_service: "checkout"
+    expected_root_cause_service: "db"
+    expected_root_cause: "db returning errors"
+    symptoms:
+      - "db 5xx"
+      - "checkout 5xx/502"
+      - "frontend 502"
+      - "log: injected fault: internal error while handling request"
+
+  - id: db_pool_exhausted
+    description: "Database connection pool exhausted (holds all 5 slots for 60s)"
+    trigger: "POST db:/fault/pool?hold_seconds=60"
+    investigate_service: "checkout"
+    expected_root_cause_service: "db"
+    expected_root_cause: "db connection pool exhaustion"
+    symptoms:
+      - "db 503"
+      - "log: connection pool exhausted"
+
+  - id: checkout_memory_leak
+    description: "Checkout retains 1MB per request leading to OOMKill"
+    trigger: "POST checkout:/fault/leak?mb_per_request=1"
+    investigate_service: "checkout"
+    expected_root_cause_service: "checkout"
+    expected_root_cause: "checkout memory leak"
+    symptoms:
+      - "memory climbs"
+      - "container OOMKilled"
+      - "restart count rises"
+      - "intermittent 502s"
+
+  - id: checkout_crash
+    description: "Checkout container stopped completely"
+    trigger: "docker stop checkout"
+    investigate_service: "frontend"
+    expected_root_cause_service: "checkout"
+    expected_root_cause: "checkout down"
+    symptoms:
+      - "frontend 502"
+      - "log: downstream call failed: ConnectError"
+      - "checkout container exited"
+
+  - id: bad_deploy
+    description: "Bad deployment to checkout with reduced payment timeout"
+    trigger: "POST checkout:/fault/errors?rate=0.4 + deploys.json event"
+    investigate_service: "checkout"
+    expected_root_cause_service: "checkout"
+    expected_root_cause: "bad deploy of checkout"
+    symptoms:
+      - "checkout 5xx starting at deploy timestamp"
+      - "deploy event recorded in deploys.json"

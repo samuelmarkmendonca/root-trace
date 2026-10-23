@@ -1,0 +1,144 @@
+{
+  "service": "checkout",
+  "depends_on": [
+    "db"
+  ],
+  "window": {
+    "start": "2026-10-23T16:08:08+00:00",
+    "end": "2026-10-23T16:13:08+00:00",
+    "minutes": 5
+  },
+  "metrics": {
+    "request_rate_per_s": {
+      "baseline": 3.8475,
+      "min": 1.0182,
+      "max": 3.8548,
+      "avg": 3.5578,
+      "last": 1.0182,
+      "peak_at": "2026-10-23T16:08:08+00:00",
+      "jump_at": null,
+      "points": 21
+    },
+    "error_ratio": {
+      "baseline": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "avg": 0.0,
+      "last": 0.0,
+      "peak_at": "2026-10-23T16:08:08+00:00",
+      "jump_at": null,
+      "points": 21
+    },
+    "latency_p95_seconds": {
+      "baseline": 0.0975,
+      "min": 0.0975,
+      "max": 2.332,
+      "avg": 0.3484,
+      "last": 2.332,
+      "peak_at": "2026-10-23T16:13:08+00:00",
+      "jump_at": "2026-10-23T16:12:38+00:00",
+      "points": 21
+    }
+  },
+  "logs": {
+    "lines_scanned": 0,
+    "error_lines": 0,
+    "patterns": [],
+    "source": "loki"
+  },
+  "graph": {
+    "nodes": [
+      {
+        "id": "frontend",
+        "container": "frontend",
+        "health": "unhealthy",
+        "details": {
+          "reasons": [
+            "latency_p95 (2.3833s) > 3x baseline (0.0975s) and > 0.3s"
+          ]
+        }
+      },
+      {
+        "id": "checkout",
+        "container": "checkout",
+        "health": "unhealthy",
+        "details": {
+          "reasons": [
+            "latency_p95 (2.3320s) > 3x baseline (0.0975s) and > 0.3s"
+          ]
+        }
+      },
+      {
+        "id": "db",
+        "container": "db",
+        "health": "unhealthy",
+        "details": {
+          "reasons": [
+            "latency_p95 (0.9538s) > 3x baseline (0.0471s) and > 0.3s"
+          ]
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "frontend",
+        "to": "checkout"
+      },
+      {
+        "from": "checkout",
+        "to": "db"
+      }
+    ]
+  },
+  "candidates": [
+    {
+      "service": "db",
+      "reason": "latency_p95 (0.9538s) > 3x baseline (0.0471s) and > 0.3s (no unhealthy dependencies)",
+      "is_down": false
+    }
+  ],
+  "timeline": [
+    {
+      "timestamp": "2026-10-23T16:12:38+00:00",
+      "epoch": 1792771958.0,
+      "type": "metric_jump",
+      "service": "frontend",
+      "description": "Metric latency_p95_seconds jumped to 2.3833 (baseline 0.0975)",
+      "details": {
+        "metric": "latency_p95_seconds",
+        "baseline": 0.0975,
+        "max": 2.3833,
+        "peak_at": "2026-10-23T16:13:08+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:12:38+00:00",
+      "epoch": 1792771958.0,
+      "type": "metric_jump",
+      "service": "checkout",
+      "description": "Metric latency_p95_seconds jumped to 2.332 (baseline 0.0975)",
+      "details": {
+        "metric": "latency_p95_seconds",
+        "baseline": 0.0975,
+        "max": 2.332,
+        "peak_at": "2026-10-23T16:13:08+00:00"
+      }
+    },
+    {
+      "timestamp": "2026-10-23T16:12:38+00:00",
+      "epoch": 1792771958.0,
+      "type": "metric_jump",
+      "service": "db",
+      "description": "Metric latency_p95_seconds jumped to 0.9538 (baseline 0.0471)",
+      "details": {
+        "metric": "latency_p95_seconds",
+        "baseline": 0.0471,
+        "max": 0.9538,
+        "peak_at": "2026-10-23T16:13:08+00:00"
+      }
+    }
+  ],
+  "fault_id": "db_latency",
+  "expected_root_cause_service": "db",
+  "expected_root_cause": "db slow"
+}
