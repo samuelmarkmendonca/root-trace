@@ -95,7 +95,27 @@ Prerequisites:
 - Python 3.12 (for local development and running unit tests)
 - Ollama (installed on host machine for Stage 10+)
 
-Start all services:
+### Quick Start (Automated Initialization)
+
+Run the initialization script, which automatically checks `.env`, starts the local Ollama LLM, initializes Docker Desktop if needed, brings up all containers, and verifies endpoint health:
+
+**Windows (PowerShell):**
+```powershell
+.\init.ps1
+# Or to force a rebuild:
+.\init.ps1 -Build
+```
+
+**macOS / Linux / Bash:**
+```sh
+chmod +x scripts/init.sh
+./scripts/init.sh
+# Or to force a rebuild:
+./scripts/init.sh --build
+```
+
+### Manual Startup
+
 ```sh
 docker compose up --build -d
 ```

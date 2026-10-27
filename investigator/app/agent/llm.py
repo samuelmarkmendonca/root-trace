@@ -17,7 +17,7 @@ class LLMClient:
         api_key: Optional[str] = None,
         timeout: float = 90.0,
     ):
-        self.base_url = (base_url or settings.llm_url).rstrip("/")
+        self.base_url = (base_url or settings.get_llm_url()).rstrip("/")
         self.model = model or settings.llm_model
         self.api_key = api_key or settings.llm_api_key
         self.timeout = timeout

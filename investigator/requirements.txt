@@ -7,3 +7,4 @@ pyyaml==6.0.2
 docker==7.1.0
 pytest==8.3.4
 networkx==3.4.2
+sse-starlette==2.2.1

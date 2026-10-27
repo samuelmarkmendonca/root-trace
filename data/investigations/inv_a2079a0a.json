@@ -1,0 +1,196 @@
+{
+  "id": "inv_a2079a0a",
+  "service": "checkout",
+  "window_minutes": 5,
+  "status": "completed",
+  "created_at": 1792818933.1069012,
+  "updated_at": 1792818933.1124144,
+  "evidence": {
+    "service": "checkout",
+    "depends_on": [
+      "db"
+    ],
+    "window": {
+      "start": "2026-10-24T05:10:33+00:00",
+      "end": "2026-10-24T05:15:33+00:00",
+      "minutes": 5
+    },
+    "metrics": {
+      "error_ratio": {
+        "baseline": 0.0,
+        "max": 0.0,
+        "last": 0.0
+      },
+      "latency_p95_seconds": {
+        "baseline": 0.05,
+        "max": 0.05,
+        "last": 0.05
+      }
+    },
+    "logs": {
+      "lines_scanned": 0,
+      "error_lines": 0,
+      "patterns": [],
+      "source": "loki"
+    },
+    "graph": {
+      "nodes": [
+        {
+          "id": "frontend",
+          "container": "frontend",
+          "health": "healthy",
+          "details": {
+            "reasons": []
+          }
+        },
+        {
+          "id": "checkout",
+          "container": "checkout",
+          "health": "healthy",
+          "details": {
+            "reasons": []
+          }
+        },
+        {
+          "id": "db",
+          "container": "db",
+          "health": "healthy",
+          "details": {
+            "reasons": []
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "frontend",
+          "to": "checkout"
+        },
+        {
+          "from": "checkout",
+          "to": "db"
+        }
+      ]
+    },
+    "candidates": [],
+    "timeline": [],
+    "all_metrics": {
+      "frontend": {
+        "error_ratio": {
+          "baseline": 0.0,
+          "max": 0.0,
+          "last": 0.0
+        },
+        "latency_p95_seconds": {
+          "baseline": 0.05,
+          "max": 0.05,
+          "last": 0.05
+        }
+      },
+      "checkout": {
+        "error_ratio": {
+          "baseline": 0.0,
+          "max": 0.0,
+          "last": 0.0
+        },
+        "latency_p95_seconds": {
+          "baseline": 0.05,
+          "max": 0.05,
+          "last": 0.05
+        }
+      },
+      "db": {
+        "error_ratio": {
+          "baseline": 0.0,
+          "max": 0.0,
+          "last": 0.0
+        },
+        "latency_p95_seconds": {
+          "baseline": 0.05,
+          "max": 0.05,
+          "last": 0.05
+        }
+      }
+    },
+    "all_logs": {
+      "frontend": {
+        "lines_scanned": 0,
+        "error_lines": 0,
+        "patterns": [],
+        "source": "loki"
+      },
+      "checkout": {
+        "lines_scanned": 0,
+        "error_lines": 0,
+        "patterns": [],
+        "source": "loki"
+      },
+      "db": {
+        "lines_scanned": 0,
+        "error_lines": 0,
+        "patterns": [],
+        "source": "loki"
+      }
+    },
+    "container_statuses": {
+      "frontend": {
+        "status": "running",
+        "running": true,
+        "restart_count": 0,
+        "oom_killed": false
+      },
+      "checkout": {
+        "status": "running",
+        "running": true,
+        "restart_count": 0,
+        "oom_killed": false
+      },
+      "db": {
+        "status": "running",
+        "running": true,
+        "restart_count": 0,
+        "oom_killed": false
+      }
+    }
+  },
+  "report": {
+    "target_service": "checkout",
+    "status": "completed",
+    "summary": "Database slow",
+    "root_causes": [
+      {
+        "rank": 1,
+        "service": "db",
+        "summary": "db slow",
+        "confidence": 0.9,
+        "evidence": [
+          {
+            "tool": "query_prometheus",
+            "input": "",
+            "finding": "p95 > 0.8s"
+          }
+        ]
+      }
+    ]
+  },
+  "events": [
+    {
+      "step": 0,
+      "type": "thought",
+      "content": "Starting telemetry collection across architecture for 'checkout'...",
+      "tool_name": null,
+      "tool_args": null,
+      "tool_result": null,
+      "timestamp": 1792818933.10767
+    },
+    {
+      "step": 0,
+      "type": "thought",
+      "content": "Telemetry correlated. Pre-ranked root cause candidates: [None]. Invoking LLM diagnostic agent...",
+      "tool_name": null,
+      "tool_args": null,
+      "tool_result": null,
+      "timestamp": 1792818933.1122968
+    }
+  ],
+  "error": null
+}

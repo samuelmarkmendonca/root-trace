@@ -328,11 +328,14 @@ class InvestigatorAgent:
         # Fallback if model still didn't produce valid schema
         if report is None:
             candidates = evidence.get("candidates", [])
-            primary_candidate = candidates[0] if candidates else target_service
+            first_c = candidates[0] if candidates else target_service
+            primary_candidate = first_c.get("service", target_service) if isinstance(first_c, dict) else str(first_c)
+            candidate_reason = first_c.get("reason", "") if isinstance(first_c, dict) else ""
+            finding_text = f"{primary_candidate} identified as root cause candidate ({candidate_reason})" if candidate_reason else f"{primary_candidate} unhealthy with no downstream dependencies unhealthy"
             report = InvestigationReport(
                 target_service=target_service,
                 status="completed",
-                summary=f"Incident investigation identified {primary_candidate} as primary candidate based on telemetry correlation.",
+                summary=f"Incident investigation identified {primary_candidate} as primary root cause based on telemetry correlation.",
                 root_causes=[
                     RootCause(
                         rank=1,
@@ -343,7 +346,7 @@ class InvestigatorAgent:
                             EvidenceItem(
                                 tool="pre_ranker",
                                 input="candidates",
-                                finding=f"{primary_candidate} unhealthy with no downstream dependencies unhealthy",
+                                finding=finding_text,
                             )
                         ],
                     )

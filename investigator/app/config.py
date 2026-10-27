@@ -20,6 +20,11 @@ class Settings(BaseSettings):
     llm_temperature: float = 0.1
     llm_max_steps: int = 6
 
+    def get_llm_url(self) -> str:
+        if (Path("/.dockerenv").exists() or os.getenv("DOCKER_CONTAINER")) and ("localhost" in self.llm_url or "127.0.0.1" in self.llm_url):
+            return self.llm_url.replace("localhost", "host.docker.internal").replace("127.0.0.1", "host.docker.internal")
+        return self.llm_url
+
     model_config = SettingsConfigDict(
         env_file=(".env", "../.env"),
         env_file_encoding="utf-8",
