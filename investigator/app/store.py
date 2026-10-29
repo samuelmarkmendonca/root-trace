@@ -84,7 +84,7 @@ class InvestigationStore:
         if not record:
             return
 
-        event_dict = event.model_dump()
+        event_dict = event.model_dump(exclude_none=True)
         record["events"].append(event_dict)
         record["updated_at"] = time.time()
 

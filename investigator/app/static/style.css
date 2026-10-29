@@ -1202,7 +1202,9 @@ body {
 }
 
 .evt-type-tag.finish,
-.evt-type-tag.done {
+.evt-type-tag.done,
+.evt-type-tag.final_answer,
+.evt-type-tag.verdict {
   background: var(--color-green-bg);
   color: var(--color-green);
   border: 1px solid var(--color-green-border);

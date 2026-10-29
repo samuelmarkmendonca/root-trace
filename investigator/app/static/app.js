@@ -287,7 +287,17 @@ document.addEventListener('DOMContentLoaded', () => {
   quickChips.forEach(chip => {
     chip.addEventListener('click', () => {
       const f = chip.getAttribute('data-fault');
-      if (f) triggerFault(f);
+      if (!f) return;
+      if (f === 'reset') {
+        triggerFault('reset');
+        return;
+      }
+      if (f.startsWith('db_')) {
+        if (selectServiceEl) selectServiceEl.value = 'db';
+      } else if (f.startsWith('checkout_') || f === 'bad_deploy') {
+        if (selectServiceEl) selectServiceEl.value = 'checkout';
+      }
+      triggerFault(f);
     });
   });
 
@@ -309,10 +319,29 @@ document.addEventListener('DOMContentLoaded', () => {
   // 4. Start Investigation
   // =============================================================
   btnStartInvEl.addEventListener('click', runInvestigation);
+
+  // Header "New Investigation" button scrolls to the query card and focuses input (does not auto-run)
   btnHeaderNewInvEl.addEventListener('click', () => {
-    queryTextInputEl.focus();
-    runInvestigation();
+    const target = document.getElementById('query-section');
+    smoothScrollTo(target);
+    if (selectServiceEl) {
+      selectServiceEl.focus();
+    }
+    if (target) {
+      target.classList.remove('section-falling-target');
+      void target.offsetWidth;
+      target.classList.add('section-falling-target');
+    }
   });
+
+  if (queryTextInputEl) {
+    queryTextInputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        runInvestigation();
+      }
+    });
+  }
 
   async function runInvestigation() {
     const service = selectServiceEl.value;
@@ -434,6 +463,83 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
+  function formatToolArgs(args) {
+    if (!args || typeof args !== 'object') return '';
+    if (args.query) return `"${escapeHtml(args.query)}"`;
+    if (args.service) {
+      let str = `service: "${escapeHtml(args.service)}"`;
+      if (args.query) str += `, filter: "${escapeHtml(args.query)}"`;
+      return str;
+    }
+    try {
+      const s = JSON.stringify(args);
+      return s.length > 120 ? escapeHtml(s.slice(0, 120) + '...') : escapeHtml(s);
+    } catch (e) {
+      return '';
+    }
+  }
+
+  function formatToolResult(toolName, result) {
+    if (result === null || result === undefined) return '';
+
+    if (typeof result !== 'object') {
+      const str = String(result).trim();
+      return str ? `<code>${escapeHtml(str)}</code>` : '';
+    }
+
+    if (result.error) {
+      return `<span style="color: var(--color-red); font-weight: 600;">Error: ${escapeHtml(result.error)}</span>`;
+    }
+
+    if (toolName === 'query_prometheus' && Array.isArray(result.summaries)) {
+      const count = result.series_count !== undefined ? result.series_count : result.summaries.length;
+      if (count === 0) {
+        return `<code>0 series returned (metric is zero or baseline)</code>`;
+      }
+      const sample = result.summaries[0]?.summary;
+      let detail = `${count} series returned`;
+      if (sample && typeof sample === 'object') {
+        if (sample.max !== undefined) detail += ` • max: ${sample.max}, last: ${sample.last || 0}, baseline: ${sample.baseline || 0}`;
+        if (sample.jump_at) detail += ` • jump detected at ${sample.jump_at}`;
+      }
+      return `<code>${escapeHtml(detail)}</code>`;
+    }
+
+    if (toolName === 'search_logs' && Array.isArray(result.patterns)) {
+      const count = result.pattern_count !== undefined ? result.pattern_count : result.patterns.length;
+      if (count === 0) {
+        return `<code>0 error patterns found in window</code>`;
+      }
+      const topPat = result.patterns[0]?.pattern || result.patterns[0]?.sample || '';
+      const topCount = result.patterns[0]?.count || 1;
+      let detail = `${count} pattern${count > 1 ? 's' : ''} found (${result.total_lines || 0} lines scanned)`;
+      if (topPat) {
+        const truncated = topPat.length > 80 ? topPat.slice(0, 80) + '...' : topPat;
+        detail += ` • Top: "${truncated}" (x${topCount})`;
+      }
+      return `<code>${escapeHtml(detail)}</code>`;
+    }
+
+    if (toolName === 'get_container_status' && result.service) {
+      const status = result.status || (result.running ? 'running' : 'stopped');
+      const restarts = result.restart_count !== undefined ? result.restart_count : 0;
+      const oom = result.oom_killed ? ' • OOM-KILLED' : '';
+      return `<code>${escapeHtml(result.service)}: ${status} • restarts: ${restarts}${oom}</code>`;
+    }
+
+    if (toolName === 'get_downstream') {
+      const down = (result.downstream_dependencies || []).join(', ') || 'none';
+      const up = (result.upstream_callers || []).join(', ') || 'none';
+      return `<code>downstream: [${escapeHtml(down)}] • callers: [${escapeHtml(up)}]</code>`;
+    }
+
+    let jsonStr = JSON.stringify(result);
+    if (jsonStr.length > 200) {
+      jsonStr = jsonStr.slice(0, 200) + '...';
+    }
+    return `<code>${escapeHtml(jsonStr)}</code>`;
+  }
+
   function appendStreamEvent(evt) {
     if (!evt || evt.type === 'ping') return;
     const row = document.createElement('div');
@@ -445,20 +551,27 @@ document.addEventListener('DOMContentLoaded', () => {
     let details = escapeHtml(evt.content || '');
     const toolName = evt.tool_name || evt.tool;
     const toolArgs = evt.tool_args || evt.input;
-    const toolResult = evt.tool_result !== undefined ? evt.tool_result : evt.result_preview;
+    const rawResult = (evt.tool_result !== undefined && evt.tool_result !== null) ? evt.tool_result : evt.result_preview;
 
-    if (toolName) {
-      details += ` <br><div style="margin-top:4px;"><strong>Tool:</strong> <code>${escapeHtml(toolName)}</code>(${escapeHtml(JSON.stringify(toolArgs || {}))})</div>`;
+    // Only render tool calling block when tool_call has a toolName
+    if (toolName && (eventType === 'tool_call' || eventType === 'tool')) {
+      const formattedArgs = formatToolArgs(toolArgs);
+      details += ` <br><div style="margin-top:4px;"><strong>Tool:</strong> <code>${escapeHtml(toolName)}</code>(${formattedArgs})</div>`;
     }
-    if (toolResult !== undefined) {
-      let preview = typeof toolResult === 'object' ? JSON.stringify(toolResult) : String(toolResult);
-      if (preview.length > 250) preview = preview.slice(0, 250) + '...';
-      details += ` <br><div style="margin-top:2px;"><strong>Result:</strong> <code>${escapeHtml(preview)}</code></div>`;
+
+    // Only render tool result block when tool_result event has a real, non-null result
+    if (rawResult !== undefined && rawResult !== null && (eventType === 'tool_result' || eventType === 'result')) {
+      const formattedResult = formatToolResult(toolName, rawResult);
+      if (formattedResult) {
+        details += ` <br><div style="margin-top:2px;"><strong>Result:</strong> ${formattedResult}</div>`;
+      }
     }
+
+    const typeLabel = eventType === 'final_answer' ? 'verdict' : eventType;
 
     row.innerHTML = `
       <span class="evt-time">${time}</span>
-      <span class="evt-type-tag ${escapeHtml(eventType)}">${escapeHtml(eventType)}</span>
+      <span class="evt-type-tag ${escapeHtml(eventType)}">${escapeHtml(typeLabel)}</span>
       <div class="evt-content">${details}</div>
     `;
 
@@ -764,7 +877,15 @@ document.addEventListener('DOMContentLoaded', () => {
     timelineListEl.classList.remove('hidden');
     timelineListEl.innerHTML = '';
 
-    const list = filter === 'all' ? events : events.filter(e => e.type === filter);
+    const list = filter === 'all'
+      ? events
+      : events.filter(e => {
+          if (filter === 'container_restart') {
+            return e.type && (e.type.startsWith('container_'));
+          }
+          return e.type === filter;
+        });
+
     if (list.length === 0) {
       timelineListEl.innerHTML = `<div class="empty-hint">No events for filter '${escapeHtml(filter)}'.</div>`;
       return;
@@ -774,10 +895,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const row = document.createElement('div');
       row.className = 't-row';
 
+      const rawTime = evt.timestamp || (evt.epoch ? evt.epoch * 1000 : null) || evt.time;
       let clock = '--:--:--';
-      if (evt.time) {
-        const d = new Date(typeof evt.time === 'number' ? evt.time * 1000 : evt.time);
-        clock = !isNaN(d.getTime()) ? d.toLocaleTimeString() : String(evt.time);
+      if (rawTime) {
+        const d = new Date(typeof rawTime === 'number' ? (rawTime < 1e11 ? rawTime * 1000 : rawTime) : rawTime);
+        clock = !isNaN(d.getTime()) ? d.toLocaleTimeString() : String(rawTime);
       }
 
       row.innerHTML = `

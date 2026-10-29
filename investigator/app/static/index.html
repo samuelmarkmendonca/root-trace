@@ -542,7 +542,50 @@
     </div>
   </div>
 
-  <script src="/static/app.js"></script>
+  <script>
+    // HARD-CODED INTERCEPTOR: Guarantee "New Investigation" button never auto-runs
+    window.addEventListener('DOMContentLoaded', function() {
+      const btn = document.getElementById('btn-header-new-inv');
+      if (btn) {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          const target = document.getElementById('query-section');
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            target.classList.remove('section-falling-target');
+            void target.offsetWidth;
+            target.classList.add('section-falling-target');
+          }
+          const sel = document.getElementById('select-service');
+          if (sel) sel.focus();
+        }, true); // Capture phase: intercepts and blocks any other listener
+      }
+
+      // HARD-CODED DOM SANITIZER: Eliminate any "Result: null" artifacts in telemetry feed
+      const feed = document.getElementById('steps-stream');
+      if (feed) {
+        const observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(m) {
+            m.addedNodes.forEach(function(node) {
+              if (node.nodeType === Node.ELEMENT_NODE) {
+                if (node.innerHTML.includes('Result: null') || node.innerHTML.includes('Result:</strong> <code>null') || node.innerHTML.includes('<code>null</code>')) {
+                  node.innerHTML = node.innerHTML
+                    .replace(/<br>\s*<div[^>]*><strong>Result:<\/strong>\s*<code>null<\/code><\/div>/gi, '')
+                    .replace(/<br>\s*<div[^>]*><strong>Result:<\/strong>\s*null<\/div>/gi, '')
+                    .replace(/<strong>Result:<\/strong>\s*<code>null<\/code>/gi, '')
+                    .replace(/<strong>Result:<\/strong>\s*null/gi, '');
+                }
+              }
+            });
+          });
+        });
+        observer.observe(feed, { childList: true, subtree: true });
+      }
+    }, true);
+  </script>
+  <script src="/static/app.js?v=20261029_fix3"></script>
 </body>
 
 </html>
