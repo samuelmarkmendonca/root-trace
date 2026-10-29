@@ -1,6 +1,6 @@
 /**
- * ShopLite Stage 3: Real checkout and db backend wired via FastAPI proxy.
- * Real fetch() to /api/products and /api/checkout.
+ * ShopLite: Distributed hardware & developer peripherals storefront.
+ * Connects to live checkout and db backend services.
  */
 
 // ---------------------------------------------------------------------------
@@ -385,86 +385,6 @@ function initFilters() {
 }
 
 // ---------------------------------------------------------------------------
-// Fault panel (UI toggle buttons)
-// ---------------------------------------------------------------------------
-const FAULTS = [
-  { id: 'db_latency',           label: 'db › Add Latency',       service: 'db',       kind: 'latency', params: 'ms=800', desc: 'Inject 800ms latency on db queries.' },
-  { id: 'db_errors',            label: 'db › Return Errors',      service: 'db',       kind: 'errors',  params: 'rate=0.6', desc: 'db returns 500 at 60% rate.' },
-  { id: 'db_pool_exhausted',    label: 'db › Exhaust Pool',       service: 'db',       kind: 'pool',    params: 'hold_seconds=60', desc: 'Hold all pool slots for 60s.' },
-  { id: 'checkout_crash',       label: 'checkout › Crash',        service: 'checkout', kind: 'crash',   params: '', desc: 'Stop checkout (via inject_fault.py CLI).' },
-  { id: 'checkout_memory_leak', label: 'checkout › Memory Leak', service: 'checkout', kind: 'leak',    params: 'mb_per_request=1', desc: 'Allocate 1MB/request until OOM.' },
-  { id: 'bad_deploy',           label: 'checkout › Bad Deploy',   service: 'checkout', kind: 'errors',  params: 'rate=0.4', desc: 'Set payment_timeout_ms=50 + deploy event.' },
-];
-
-function renderFaultPanel() {
-  const list = document.getElementById('fault-list');
-  if (!list) return;
-
-  list.innerHTML = FAULTS.map(f => `
-    <div class="fault-item">
-      <div class="fault-meta">
-        <span class="fault-label">${f.label}</span>
-        <span class="fault-desc">${f.desc}</span>
-      </div>
-      <button class="fault-trigger-btn" type="button" data-fault="${f.id}">Inject</button>
-    </div>
-  `).join('');
-
-  list.querySelectorAll('.fault-trigger-btn').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const fault = FAULTS.find(f => f.id === btn.dataset.fault);
-      if (!fault) return;
-
-      if (fault.id === 'checkout_crash') {
-        setFaultStatus(fault.id, 'active', 'Run `python scripts/inject_fault.py checkout_crash` to stop container.');
-        btn.textContent = 'Use CLI';
-        return;
-      }
-
-      setFaultStatus(fault.id, 'injecting', `Injecting ${fault.id}…`);
-      try {
-        const query = fault.params ? `?${fault.params}` : '';
-        const res = await fetch(`/admin/fault/${fault.service}/${fault.kind}${query}`, { method: 'POST' });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        setFaultStatus(fault.id, 'active', `${fault.id} active in ${fault.service}`);
-        btn.textContent = 'Active';
-        btn.classList.add('fault-active');
-      } catch (err) {
-        setFaultStatus(fault.id, 'error', `Failed to inject ${fault.id}: ${err.message}`);
-      }
-    });
-  });
-
-  const resetBtn = document.getElementById('fault-reset-btn');
-  if (resetBtn) {
-    resetBtn.addEventListener('click', async () => {
-      setFaultStatus('reset', 'injecting', 'Resetting all faults…');
-      try {
-        await Promise.all([
-          fetch('/admin/fault/db/reset', { method: 'POST' }),
-          fetch('/admin/fault/checkout/reset', { method: 'POST' })
-        ]);
-        list.querySelectorAll('.fault-trigger-btn').forEach(btn => {
-          btn.textContent = 'Inject';
-          btn.classList.remove('fault-active');
-        });
-        setFaultStatus('reset', 'idle', 'All faults reset. System nominal.');
-      } catch (err) {
-        setFaultStatus('reset', 'error', `Reset failed: ${err.message}`);
-      }
-    });
-  }
-}
-
-function setFaultStatus(faultId, state, message) {
-  const statusEl = document.getElementById('fault-status-text');
-  if (statusEl) {
-    statusEl.dataset.state = state;
-    statusEl.textContent = message;
-  }
-}
-
-// ---------------------------------------------------------------------------
 // Theme toggle
 // ---------------------------------------------------------------------------
 function initThemeToggle() {
@@ -493,7 +413,6 @@ document.addEventListener('DOMContentLoaded', () => {
   loadProducts(null);
   renderCart();
   initFilters();
-  renderFaultPanel();
   initThemeToggle();
 
   const checkoutBtn = document.getElementById('btn-checkout');
@@ -501,3 +420,4 @@ document.addEventListener('DOMContentLoaded', () => {
     checkoutBtn.addEventListener('click', handleCheckout);
   }
 });
+

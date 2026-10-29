@@ -46,6 +46,8 @@ services:
       - CHECKOUT_URL=http://checkout:8000
     depends_on:
       - checkout
+    volumes:
+      - ./demo/frontend/static:/app/static:ro
     logging: *default-logging
 
   loadgen:

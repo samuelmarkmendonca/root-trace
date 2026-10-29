@@ -16,15 +16,15 @@
 </head>
 <body>
 
-  <!-- Top System Environment Strip -->
-  <aside class="system-banner" aria-label="System Environment Banner">
+  <!-- Top Announcement Strip -->
+  <aside class="system-banner" aria-label="Announcement Banner">
     <div class="system-banner-inner">
       <div class="system-badge">
         <span class="status-dot"></span>
-        <span>Environment: Testbed Demo (frontend:8001)</span>
+        <span>Complimentary expedited courier shipping on orders over $150</span>
       </div>
       <div class="system-meta">
-        <span>Scraped by Prometheus • Logs to Loki via Alloy</span>
+        <span>ShopLite Hardware Systems</span>
       </div>
     </div>
   </aside>
@@ -43,8 +43,8 @@
       <nav aria-label="Main Navigation">
         <ul class="nav-links">
           <li class="nav-item active"><a href="#">Catalog</a></li>
-          <li class="nav-item"><a href="#">Orders</a></li>
-          <li class="nav-item"><a href="/health">Health API</a></li>
+          <li class="nav-item"><a href="#">Featured</a></li>
+          <li class="nav-item"><a href="#">Support</a></li>
         </ul>
       </nav>
 
@@ -85,9 +85,8 @@
         <p class="page-desc">High-reliability developer workstations, ergonomic peripherals, and dock hardware.</p>
       </div>
       <div class="catalog-status">
-        <span>Telemetry Status: Active</span>
-        <span>•</span>
-        <span>Service: frontend</span>
+        <span>●</span>
+        <span>Inventory Available</span>
       </div>
     </div>
 
@@ -101,7 +100,7 @@
             <button class="filter-btn" type="button" data-filter="Displays">Displays</button>
             <button class="filter-btn" type="button" data-filter="Accessories">Accessories</button>
           </div>
-          <span id="item-count-text" class="item-count-text">Showing 6 products</span>
+          <span id="item-count-text" class="item-count-text">Showing products</span>
         </div>
 
         <!-- Filled dynamically by app.js -->
@@ -148,53 +147,28 @@
         </div>
 
         <div class="cart-sidebar-info">
-          <h3 class="info-title">Service Details</h3>
+          <h3 class="info-title">Purchase Protection</h3>
           <ul class="info-list">
             <li class="info-item">
-              <span class="info-label">Active Node:</span>
-              <span class="info-value">frontend</span>
+              <span class="info-label">Dispatch:</span>
+              <span class="info-value">Within 24 Hours</span>
             </li>
             <li class="info-item">
-              <span class="info-label">Internal Port:</span>
-              <span class="info-value">8001</span>
+              <span class="info-label">Warranty:</span>
+              <span class="info-value">2-Year Limited</span>
             </li>
             <li class="info-item">
-              <span class="info-label">Downstream:</span>
-              <span class="info-value">checkout:8002</span>
+              <span class="info-label">Returns:</span>
+              <span class="info-value">30-Day Hassle-Free</span>
             </li>
             <li class="info-item">
-              <span class="info-label">Architecture:</span>
-              <span class="info-value">FastAPI + Static</span>
+              <span class="info-label">Checkout:</span>
+              <span class="info-value">Encrypted &amp; Verified</span>
             </li>
           </ul>
         </div>
       </aside>
     </div>
-
-    <!-- Fault Panel (collapsed) -->
-    <details class="fault-panel" id="fault-panel">
-      <summary class="fault-panel-summary">
-        <span class="fault-panel-icon">⚡</span>
-        Fault Injection Panel
-        <span class="fault-panel-badge">Stage 2 — UI only, no network</span>
-      </summary>
-      <div class="fault-panel-body">
-        <div class="fault-panel-header">
-          <div>
-            <p class="fault-panel-desc">
-              Simulate service failures and degradation scenarios for observability testing.
-              Buttons update status text only in Stage 2 — real injection wired in Stage 4.
-            </p>
-            <div class="fault-status-row">
-              <span class="fault-status-label">Status:</span>
-              <span id="fault-status-text" class="fault-status-text" data-state="idle">System nominal</span>
-            </div>
-          </div>
-          <button id="fault-reset-btn" class="fault-reset-btn" type="button">Reset All Faults</button>
-        </div>
-        <div id="fault-list" class="fault-list"></div>
-      </div>
-    </details>
   </main>
 
   <!-- Site Footer -->
@@ -202,33 +176,32 @@
     <div class="footer-container">
       <div class="footer-grid">
         <div>
-          <h4 class="footer-col-title">ShopLite Testbed App</h4>
+          <h4 class="footer-col-title">About ShopLite</h4>
           <p class="footer-text">
-            Simulated 3-tier microservice architecture constructed for autonomous incident diagnosis and observability testing.
-            Exposes Prometheus metrics, structured logs, and deterministic fault injection endpoints.
+            Precision mechanical keyboards, ultra-wide developer displays, and performance studio peripherals designed for software engineers.
           </p>
         </div>
         <div>
-          <h4 class="footer-col-title">Telemetry Pipelines</h4>
+          <h4 class="footer-col-title">Product Catalog</h4>
           <ul class="footer-links">
-            <li>Metrics: Prometheus (/metrics)</li>
-            <li>Logs: Alloy stdout to Loki</li>
-            <li>Traces: OpenTelemetry (Stage 13)</li>
-            <li>Infra: Docker Engine API</li>
+            <li><a href="#">Mechanical Keyboards</a></li>
+            <li><a href="#">Developer Displays</a></li>
+            <li><a href="#">Ergonomic Accessories</a></li>
+            <li><a href="#">Cables &amp; Docking</a></li>
           </ul>
         </div>
         <div>
-          <h4 class="footer-col-title">Quick Endpoints</h4>
+          <h4 class="footer-col-title">Customer Care</h4>
           <ul class="footer-links">
-            <li><a href="/health">GET /health</a></li>
-            <li><a href="#">GET /metrics (Stage 4)</a></li>
-            <li><a href="#">POST /api/checkout (Stage 3)</a></li>
+            <li><a href="/health">Service Health</a></li>
+            <li><a href="#">Shipping Policy</a></li>
+            <li><a href="#">Warranty Claims</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-bottom">
-        <span>ShopLite Microservices — Frontend Service v1.0.0</span>
-        <span>Python 3.12 • FastAPI</span>
+        <span>&copy; 2026 ShopLite Peripherals. All rights reserved.</span>
+        <span>Secure Distributed Commerce</span>
       </div>
     </div>
   </footer>
